@@ -41,7 +41,7 @@ local find_files = function(opts)
   opts = opts or {}
 
   if opts.find_command == nil then
-    opts.find_command = { 'fd', '--type', 'file', '--color', 'never', '--hidden', '--exlucde', '.git' }
+    opts.find_command = { 'fd', '--type', 'file', '--color', 'never', '--hidden', '--exclude', '.git' }
   end
 
   if opts.find_command[1] ~= 'fd' then

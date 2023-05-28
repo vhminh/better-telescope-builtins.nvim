@@ -1,9 +1,9 @@
-local pickers = require 'telescope.pickers'
-local finders = require 'telescope.finders'
+local pickers = require('telescope.pickers')
+local finders = require('telescope.finders')
 local conf = require('telescope.config').values
 local notify = require('telescope.utils').notify
-local make_entry = require 'telescope.make_entry'
-local entry_display = require 'telescope.pickers.entry_display'
+local make_entry = require('telescope.make_entry')
+local entry_display = require('telescope.pickers.entry_display')
 local utils = require('better-telescope-builtins.utils')
 local strings = require('plenary.strings')
 
@@ -14,9 +14,9 @@ local file_entry_maker = function(opts)
   local displayer = entry_display.create({
     separator = ' ',
     items = {
-      { width = iconwidth, },
-      { width = nil, },
-      { remaining = true, },
+      { width = iconwidth },
+      { width = nil },
+      { remaining = true },
     },
   })
   local my_entry_maker = function(line)
@@ -27,11 +27,11 @@ local file_entry_maker = function(opts)
       local padding = 8
       local max_path_len = entry_width - (icon and 2 or 0) - padding
       local filename, parents_str = utils.filename_and_shorten_parents(e.value, max_path_len)
-      return displayer {
-        { icon,                                                                         icon_hl },
+      return displayer({
+        { icon, icon_hl },
         { filename },
-        { strings.align_str(parents_str, max_path_len + padding - #filename - 1, true), 'Comment' }
-      }
+        { strings.align_str(parents_str, max_path_len + padding - #filename - 1, true), 'Comment' },
+      })
     end
     return entry
   end
@@ -53,7 +53,7 @@ local find_files = function(opts)
     return
   end
 
-  if 1 ~= vim.fn.executable 'fd' then
+  if 1 ~= vim.fn.executable('fd') then
     notify('find_files', {
       msg = 'You need to install fd',
       level = 'ERROR',
@@ -68,13 +68,13 @@ local find_files = function(opts)
   opts.entry_maker = opts.entry_maker or file_entry_maker(opts)
 
   pickers
-      .new(opts, {
-        prompt_title = 'Find Files',
-        finder = finders.new_oneshot_job(opts.find_command, opts),
-        previewer = conf.file_previewer(opts),
-        sorter = conf.file_sorter(opts),
-      })
-      :find()
+    .new(opts, {
+      prompt_title = 'Find Files',
+      finder = finders.new_oneshot_job(opts.find_command, opts),
+      previewer = conf.file_previewer(opts),
+      sorter = conf.file_sorter(opts),
+    })
+    :find()
 end
 
 return { find_files = find_files }

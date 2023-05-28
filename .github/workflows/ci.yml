@@ -1,0 +1,37 @@
+name: Test
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - run: date +%F > todays-date
+    - name: Restore cache for today's nightly
+      uses: actions/cache@v3
+      with:
+        path: _neovim
+        key: ${{ runner.os }}-${{ matrix.rev }}-${{ hashFiles('todays-date') }}
+
+    - name: Prepare
+      run: |
+        test -d _neovim || {
+          mkdir -p _neovim
+          curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}" | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
+        }
+
+    - name: Run tests
+      run:  |
+        export PATH="${PWD}/_neovim/bin:${PATH}"
+        export VIM="${PWD}/_neovim/share/nvim/runtime"
+        nvim --version
+        make test
+

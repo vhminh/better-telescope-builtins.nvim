@@ -1,0 +1,55 @@
+local utils = require('better-telescope-builtins.utils')
+
+describe('shorten_path', function()
+  it('should return \'./\' for empty path', function()
+    local shorten = utils.shorten_path({}, 4)
+    assert.are.equal(shorten, './')
+  end)
+
+  it('should return exact path regardless of max_len if full path only has 1 directory', function()
+    local shorten = utils.shorten_path({ 'homework' }, 4)
+    assert.are.equal(shorten, 'homework')
+  end)
+
+  it('should always show root and tail regardless of max_len', function()
+    local shorten = utils.shorten_path({ 'root', 'l1', 'l2', 'tail' }, 3)
+    assert.are.equal(shorten, 'root/.../tail')
+  end)
+
+  it('should keep the small path unchanged', function()
+    local shorten = utils.shorten_path({ 'p1', 'p2', 'p3' }, 10)
+    assert.are.equal(shorten, 'p1/p2/p3')
+  end)
+
+  it('should skip one intermediate in this case', function()
+    local shorten = utils.shorten_path({ 'p1', 'p2', 'p3', 'p4', 'p5' }, 11)
+    assert.are.equal(shorten, 'p1/p2/.../p4/p5')
+  end)
+
+  it('should skip 2 intermediate directories in this case', function()
+    local shorten = utils.shorten_path({ 'p1', 'p2', 'p3', 'p4', 'p5', 'p6' }, 11)
+    assert.are.equal(shorten, 'p1/p2/.../p5/p6')
+  end)
+
+  it('does not count \'.../\' toward the length', function()
+    local shorten = utils.shorten_path({ 'level1', 'level2', 'level3', 'level4' }, 20)
+    assert.are.equal(shorten, 'level1/.../level3/level4')
+  end)
+
+  it('should count \'/\' toward the length', function()
+    local shorten = utils.shorten_path({ 'level1', 'level2', 'level3' }, 19)
+    assert.are.equal(shorten, 'level1/.../level3')
+    shorten = utils.shorten_path({ 'level1', 'level2', 'level3' }, 20)
+    assert.are.equal(shorten, 'level1/level2/level3')
+  end)
+
+  it('should prioritize right side when adding new intermediate dirs', function()
+    local shorten = utils.shorten_path({ 'root', 'level1', 'level2', 'tail' }, 16)
+    assert.are.equal(shorten, 'root/.../level2/tail')
+  end)
+
+  it('should keep adding to left if the next dir on the right is too long', function()
+    local shorten = utils.shorten_path({ 'root', 'level1', 'level2', 'veryveryverylongdirectory', 'tail' }, 23)
+    assert.are.equal(shorten, 'root/level1/level2/.../tail')
+  end)
+end)

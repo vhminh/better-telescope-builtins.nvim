@@ -7,8 +7,8 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-
+  test:
+    name: test with ${{ matrix.rev }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

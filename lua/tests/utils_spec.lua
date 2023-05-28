@@ -1,7 +1,7 @@
 local utils = require('better-telescope-builtins.utils')
 
 describe('shorten_path', function()
-  it('should return \'./\' for empty path', function()
+  it("should return './' for empty path", function()
     local shorten = utils.shorten_path({}, 4)
     assert.are.equal(shorten, './')
   end)
@@ -31,12 +31,12 @@ describe('shorten_path', function()
     assert.are.equal(shorten, 'p1/p2/.../p5/p6')
   end)
 
-  it('does not count \'.../\' toward the length', function()
+  it("does not count '.../' toward the length", function()
     local shorten = utils.shorten_path({ 'level1', 'level2', 'level3', 'level4' }, 20)
     assert.are.equal(shorten, 'level1/.../level3/level4')
   end)
 
-  it('should count \'/\' toward the length', function()
+  it("should count '/' toward the length", function()
     local shorten = utils.shorten_path({ 'level1', 'level2', 'level3' }, 19)
     assert.are.equal(shorten, 'level1/.../level3')
     shorten = utils.shorten_path({ 'level1', 'level2', 'level3' }, 20)

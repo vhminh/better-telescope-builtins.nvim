@@ -17,7 +17,7 @@ local reverse = function(list)
   return result
 end
 
-local shorten_path = function(dirs, max_len)
+utils.shorten_path = function(dirs, max_len)
   if #dirs == 0 then
     return './'
   end
@@ -31,20 +31,19 @@ local shorten_path = function(dirs, max_len)
   local left_len = #lefts[1]
   local right_len = #rights[1]
   while left_end + 1 < right_start do
-    if #lefts < #rights then
-      if left_len + right_len + #dirs[left_end + 1] + #lefts + #rights > max_len then
-        break
-      end
+    local cur_len = left_len + right_len + #lefts + #rights - 1
+    local can_add_left = cur_len + #dirs[left_end + 1] + 1 <= max_len
+    local can_add_right = cur_len + #dirs[right_start - 1] + 1 <= max_len
+    if can_add_left and (#lefts < #rights or not can_add_right) then
       left_len = left_len + #dirs[left_end + 1]
       table.insert(lefts, dirs[left_end + 1])
       left_end = left_end + 1
-    else
-      if left_len + right_len + #dirs[right_start - 1] + #lefts + #rights > max_len then
-        break
-      end
+    elseif can_add_right and (#lefts >= #rights or not can_add_right) then
       right_len = right_len + #dirs[right_start - 1]
       table.insert(rights, dirs[right_start - 1])
       right_start = right_start - 1
+    else
+      break
     end
   end
   rights = reverse(rights)
@@ -65,7 +64,7 @@ utils.filename_and_shorten_parents = function(path, max_len)
   local parents = vim.split(path, '/')
   local filename = table.remove(parents, #parents)
   local remain = max_len - #filename
-  local parents_str = shorten_path(parents, remain)
+  local parents_str = utils.shorten_path(parents, remain)
   return filename, parents_str
 end
 

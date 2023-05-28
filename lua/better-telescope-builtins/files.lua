@@ -24,12 +24,13 @@ local file_entry_maker = function(opts)
     entry.display = function(e)
       local entry_width = utils.get_entry_width()
       local icon, icon_hl = utils.devicon_for(e.value, opts)
-      local max_path_len = entry_width - (icon and 2 or 0)
+      local padding = 8
+      local max_path_len = entry_width - (icon and 2 or 0) - padding
       local filename, parents_str = utils.filename_and_shorten_parents(e.value, max_path_len)
       return displayer {
-        { icon,                                                               icon_hl },
+        { icon,                                                                         icon_hl },
         { filename },
-        { strings.align_str(parents_str, max_path_len - #filename - 1, true), 'Comment' }
+        { strings.align_str(parents_str, max_path_len + padding - #filename - 1, true), 'Comment' }
       }
     end
     return entry
